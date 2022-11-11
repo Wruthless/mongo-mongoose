@@ -6,4 +6,4 @@ const SomeModelSchema = new Schema({
     a_value: Number,
 });
 
-module.exports = mongoose.model("SomeModel", SomeModelSchema);
+module.exports = mongoose.model("SomeModel", SomeModelSchema, 'modelstore');

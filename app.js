@@ -1,6 +1,8 @@
 //----- Mongoose and Models
 var mongoose = require('mongoose');
 var SomeModel = require("./models/primer");
+var BreakfastModel = require("./models/breakfast");
+var AwesomeModel = require('./models/awesome');
 //-----
 
 var createError = require('http-errors');
@@ -11,6 +13,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const { isReadable } = require('stream');
 
 var app = express();
 
@@ -51,11 +54,47 @@ db.once('open', function() {
         a_value: 666
     });
 
+    var model2 = new BreakfastModel({
+        eggs: 7,
+        drink: "Coffee"
+    });
+
+    var awesome_instance = new AwesomeModel({
+        name: "awesome"
+    });
+
     model1.save(function(err, model) {
         if(err) return console.error(err);
         console.log(model.a_name + " saved to collection.");
     });
+
+    model2.save(function(err, model) {
+        if(err) return console.error(err);
+        console.log(model.fullbreakfast);
+    });
+
+    //Commenting to test update()
+    // awesome_instance.save((err, model) => {
+    //     if(err) return console.error(err);
+    //     console.log(model.name);
+    // });
+
+    // Update above entry
+    // ! NOT UPDATING CREATING NEW ENTRY
+    awesome_instance.name = "New cool name";
+    awesome_instance.save((err, result) => {
+        if (err) console.error(err);
+        console.log(result.name);
+    })
+
+    AwesomeModel.create({name: "create"}, function(err, awesome_instance){
+        if (err) return console.lerr(err);
+        console.log(awesome_instance.name);
+    });
+
 });
+
+
 // -----
 
 
