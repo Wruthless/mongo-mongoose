@@ -3,6 +3,9 @@ var mongoose = require('mongoose');
 var SomeModel = require("./models/primer");
 var BreakfastModel = require("./models/breakfast");
 var AwesomeModel = require('./models/awesome');
+var AthleteModel = require('./models/athelete');
+var AuthorModel = require('./models/author');
+var StoryModel = require('./models/story');
 //-----
 
 var createError = require('http-errors');
@@ -81,22 +84,64 @@ db.once('open', function() {
 
     // Update above entry
     // ! NOT UPDATING CREATING NEW ENTRY
-    awesome_instance.name = "New cool name";
-    awesome_instance.save((err, result) => {
-        if (err) console.error(err);
-        console.log(result.name);
-    })
+    // awesome_instance.name = "New cool name";
+    // awesome_instance.save((err, result) => {
+    //     if (err) console.error(err);
+    //     console.log(result.name);
+    // })
 
     AwesomeModel.create({name: "create"}, function(err, awesome_instance){
         if (err) return console.lerr(err);
         console.log(awesome_instance.name);
     });
 
+    // AthleteModel.create({
+    //     name: "Kimbo Slice",
+    //     age: "58",
+    //     sport: "Street Fighter",
+    //     team: "American Top Team",
+    // }, (err, athlete_instance) => {
+    //     console.log(athlete_instance);
+    // });
+
+    // --- Related Documents
+    // const authorStephenKing = new AuthorModel({name: "Stephen King"});
+    // authorStephenKing.save((err) => {
+    //     if(err) console.log(err);
+
+    //     // Anne is saved at this point, create a story
+    //     const story = new StoryModel({
+    //         title: "The Shining",
+    //         // Assign the _id from the author.
+    //         author: authorStephenKing._id,
+    //     });
+
+    //     story.save((err) => {
+    //         if (err) console.log(error);
+    //         console.log("[+] Author and Story Successful!");
+    //     });
+    // });
+
 });
 
+// Searching for and returning data.
+// AwesomeModel.find({name:"New cool name"}, "__id",(err, results) => {
+//     if(err) console.error(err);
+//     console.log(results);
+// });
 
+// No callback method
+// const query = AthleteModel.find({team: "American Top Team"}); // Find Bas
+// query.select("name age"); // Get athlete name and age field data
+// query.limit(2); // Setting a limit on the number of entries
+// query.sort({age:1}); // Sorting by age, ascending
+// query.exec((err, results) => {  // Using exec to execute the query after its been built up
+//     if(err) console.log(err);
+//     console.log(results);
+// });
 // -----
 
+// START AT POPULATE()
 
 
 // error handler
