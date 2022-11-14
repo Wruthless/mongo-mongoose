@@ -90,10 +90,10 @@ db.once('open', function() {
     //     console.log(result.name);
     // })
 
-    AwesomeModel.create({name: "create"}, function(err, awesome_instance){
-        if (err) return console.lerr(err);
-        console.log(awesome_instance.name);
-    });
+    // AwesomeModel.create({name: "create"}, function(err, awesome_instance){
+    //     if (err) return console.lerr(err);
+    //     console.log(awesome_instance.name);
+    // });
 
     // AthleteModel.create({
     //     name: "Kimbo Slice",
@@ -122,6 +122,21 @@ db.once('open', function() {
     //     });
     // });
 
+    // const authorAnneReice = new AuthorModel({name: "Anne Rice"});
+    // authorAnneReice.save((err) => {
+    //     if (err) console.log(err);
+
+    //     const story = new StoryModel({
+    //         title: "The Vampire Lestat",
+    //         author: authorAnneReice._id,
+    //     });
+
+    //     story.save((err, results) => {
+    //         if (err) console.log(err);
+    //         console.log(results)
+    //     });
+    // });
+
 });
 
 // Searching for and returning data.
@@ -142,6 +157,23 @@ db.once('open', function() {
 // -----
 
 // START AT POPULATE()
+StoryModel.findOne({title: "The Shining"})
+    .populate("author")
+    .exec((err, results) => {
+        if (err) console.log(err);
+        console.log(results.author.name);
+    });
+
+AuthorModel.findOne({name: "Anne Rice"})
+    .exec((err, author_results) => {
+        StoryModel.find({author: author_results._id})
+        .exec((err, story_results) => {
+            if(err) console.log(`Story reults erorr: ${err}`);
+            for (let stories in story_results) {
+                console.log(`${story_results[stories].title}`);
+            }
+        });
+    });
 
 
 // error handler
