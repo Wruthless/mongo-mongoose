@@ -1,6 +1,17 @@
-/** Takes arguments supplied in the command line and stores them in an array.*/
-var userArgs = process.argv.slice(2);
+#! /usr/bin/env node
 
+console.log(
+    "This script populates some test books, authors, genres and bookinstances to your database. Specified database as argument - e.g.: populatedb mongodb+srv://cooluser:coolpassword@cluster0.a9azn.mongodb.net/local_library?retryWrites=true"
+);
+
+// Get arguments passed on command line
+var userArgs = process.argv.slice(2);
+/*
+if (!userArgs[0].startsWith('mongodb')) {
+    console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
+    return
+}
+*/
 var async = require("async");
 var Book = require("./models/book");
 var Author = require("./models/author");
@@ -8,37 +19,19 @@ var Genre = require("./models/genre");
 var BookInstance = require("./models/bookinstance");
 
 var mongoose = require("mongoose");
-/** The first supplied argument should be a mongo conncetion uri. */
 var mongoDB = userArgs[0];
-mongoose.connect(mongoDB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-//mongoose.Promise = global.Promise;
-
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.Promise = global.Promise;
 var db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error: "));
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 var authors = [];
 var genres = [];
 var books = [];
 var bookinstances = [];
 
-/*
-
- cb us used to ensure that once and only once, asynchronous
- invocation of the callback. 
-
- It relies on asychronous callbacks.
- 
- */
 function authorCreate(first_name, family_name, d_birth, d_death, cb) {
-    authordetail = {
-        first_name: first_name,
-        family_name: family_name,
-    };
-
+    authordetail = { first_name: first_name, family_name: family_name };
     if (d_birth != false) authordetail.date_of_birth = d_birth;
     if (d_death != false) authordetail.date_of_death = d_death;
 
@@ -46,10 +39,10 @@ function authorCreate(first_name, family_name, d_birth, d_death, cb) {
 
     author.save(function (err) {
         if (err) {
-            console.log(err);
             cb(err, null);
             return;
         }
+        console.log("New Author: " + author);
         authors.push(author);
         cb(null, author);
     });
@@ -90,10 +83,6 @@ function bookCreate(title, summary, isbn, author, genre, cb) {
     });
 }
 
-/**
- * FINISHED THIS -- Create funciton to push book instances to mongo.
-*/
-
 function bookInstanceCreate(book, imprint, due_back, status, cb) {
     bookinstancedetail = {
         book: book,
@@ -116,25 +105,35 @@ function bookInstanceCreate(book, imprint, due_back, status, cb) {
 }
 
 function createGenreAuthors(cb) {
-    async.parallel(
+    async.series(
         [
-            /* asynchronous callbacks for cb to function. */
+            function (callback) {
+                authorCreate(
+                    "Patrick",
+                    "Rothfuss",
+                    "1973-06-06",
+                    false,
+                    callback
+                );
+            },
+            function (callback) {
+                authorCreate("Ben", "Bova", "1932-11-8", false, callback);
+            },
+            function (callback) {
+                authorCreate(
+                    "Isaac",
+                    "Asimov",
+                    "1920-01-02",
+                    "1992-04-06",
+                    callback
+                );
+            },
+            function (callback) {
+                authorCreate("Bob", "Billings", false, false, callback);
+            },
             function (callback) {
                 authorCreate("Jim", "Jones", "1971-12-16", false, callback);
             },
-            function (callback) {
-                authorCreate("Stephen", "King", "1947-09-21", false, callback);
-            },
-            /* invoke cb, will stop after a single execution and console log
-       the callbacks above. */
-        ],
-        cb
-    );
-}
-
-function createGenre(cb) {
-    async.parallel(
-        [
             function (callback) {
                 genreCreate("Fantasy", callback);
             },
@@ -145,6 +144,7 @@ function createGenre(cb) {
                 genreCreate("French Poetry", callback);
             },
         ],
+        // optional callback
         cb
     );
 }
@@ -152,6 +152,16 @@ function createGenre(cb) {
 function createBooks(cb) {
     async.parallel(
         [
+            function (callback) {
+                bookCreate(
+                    "The Name of the Wind (The Kingkiller Chronicle, #1)",
+                    "I have stolen princesses back from sleeping barrow kings. I burned down the town of Trebon. I have spent the night with Felurian and left with both my sanity and my life. I was expelled from the University at a younger age than most people are allowed in. I tread paths by moonlight that others fear to speak of during day. I have talked to Gods, loved women, and written songs that make the minstrels weep.",
+                    "9781473211896",
+                    authors[0],
+                    [genres[0]],
+                    callback
+                );
+            },
             function (callback) {
                 bookCreate(
                     "The Wise Man's Fear (The Kingkiller Chronicle, #2)",
@@ -218,19 +228,124 @@ function createBooks(cb) {
     );
 }
 
-async.parallel(
-    [
-        //createGenreAuthors,
-        //createGenre
-        //createBooks,
-    ],
-    // Async parallel callback upon completion
+function createBookInstances(cb) {
+    async.parallel(
+        [
+            function (callback) {
+                bookInstanceCreate(
+                    books[0],
+                    "London Gollancz, 2014.",
+                    false,
+                    "Available",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[1],
+                    " Gollancz, 2011.",
+                    false,
+                    "Loaned",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[2],
+                    " Gollancz, 2015.",
+                    false,
+                    false,
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[3],
+                    "New York Tom Doherty Associates, 2016.",
+                    false,
+                    "Available",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[3],
+                    "New York Tom Doherty Associates, 2016.",
+                    false,
+                    "Available",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[3],
+                    "New York Tom Doherty Associates, 2016.",
+                    false,
+                    "Available",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[4],
+                    "New York, NY Tom Doherty Associates, LLC, 2015.",
+                    false,
+                    "Available",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[4],
+                    "New York, NY Tom Doherty Associates, LLC, 2015.",
+                    false,
+                    "Maintenance",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[4],
+                    "New York, NY Tom Doherty Associates, LLC, 2015.",
+                    false,
+                    "Loaned",
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[0],
+                    "Imprint XXX2",
+                    false,
+                    false,
+                    callback
+                );
+            },
+            function (callback) {
+                bookInstanceCreate(
+                    books[1],
+                    "Imprint XXX3",
+                    false,
+                    false,
+                    callback
+                );
+            },
+        ],
+        // Optional callback
+        cb
+    );
+}
+
+async.series(
+    [createGenreAuthors, createBooks, createBookInstances],
+    // Optional callback
     function (err, results) {
         if (err) {
-            console.log(err);
+            console.log("FINAL ERR: " + err);
         } else {
-            console.log(results);
+            console.log("BOOKInstances: " + bookinstances);
         }
+        // All done, disconnect from database
         mongoose.connection.close();
     }
 );
