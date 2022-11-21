@@ -96,6 +96,14 @@ mongoose
 //         });
 //     });
 
+// Book Query Test
+let bookStore = [];
+BookModel.find({})
+    .exec((err, results) => {
+        if (err) console.log(err);
+        bookStore = [...results];
+        console.log(bookStore[0]._id);
+    });
 
 
 app.use(function (err, req, res, next) {
