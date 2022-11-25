@@ -15,6 +15,8 @@ var logger = require("morgan");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var wikiRouter = require("./routes/wiki");
+var catalogRouter = require("./routes/catalog");
+
 const { isReadable } = require("stream");
 
 //const author = require('./models/author');
@@ -34,6 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/wiki", wikiRouter);
+app.use("/catalog", catalogRouter);
 
 app.use(function (req, res, next) {
     next(createError(404));
@@ -104,7 +107,7 @@ BookModel.find({})
     .exec((err, results) => {
         if (err) console.log(err);
         bookStore = [...results];
-        console.log(bookStore[0]._id);
+        //console.log(bookStore[0]._id);
     });
 
 
