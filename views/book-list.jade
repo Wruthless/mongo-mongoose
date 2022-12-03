@@ -1,0 +1,25 @@
+extends layout
+
+block content
+    h3= results[0].title
+    p= results[0].summary
+    br
+    p.bold= "Author: " + results[0].author.first_name + " " + results[0].author.family_name
+
+    #container
+        ul
+            each val in results
+                li= val
+                br
+
+    if someVal
+        h5 Testing a conditional statement in pug.
+    else
+        br
+        h5 Testing a false conditional statement in pug.
+
+    p Testing un-escaped and escaped strings: !{'<em>test</em>'} is an un-escaped string, #{'<em>test</em>'} is an escaped string.
+
+    a(href="#") Link text
+    <br>
+    | Plain text

@@ -10,7 +10,8 @@ const book_instance_controller = require("../controllers/bookinstanceController"
 // TEST ROUTES //
 
 router.get("/test-route", book_controller.book_count);
-
+router.get("/pug-test", book_controller.book_list_test);
+router.get("/test-route/pop", book_controller.book_list_pop);
 // ---------------------------------------------------------------
 
 
@@ -18,6 +19,16 @@ router.get("/test-route", book_controller.book_count);
 
 // GET catalog home page.
 router.get("/", book_controller.index);
+
+// GET request for list of all Book items.
+router.get("/books", book_controller.book_list);
+
+
+
+
+
+
+
 
 // GET request for creating a Book. NOTE This must come before routes that display Book (uses id).
 router.get("/book/create", book_controller.book_create_get);
@@ -40,8 +51,7 @@ router.post("/book/:id/update", book_controller.book_update_post);
 // GET request for one Book.
 router.get("/book/:id", book_controller.book_detail);
 
-// GET request for list of all Book items.
-router.get("/books", book_controller.book_list);
+
 
 /// AUTHOR ROUTES ///
 
