@@ -15,15 +15,16 @@ router.get("/test-route/pop", book_controller.book_list_pop);
 // ---------------------------------------------------------------
 
 
-/// BOOK ROUTES ///
-
+/* book.... */
 // GET catalog home page.
 router.get("/", book_controller.index);
 
 // GET request for list of all Book items.
 router.get("/books", book_controller.book_list);
 
-
+/* bookInstances... */
+// GET request for list of all BookInstance.
+router.get("/bookinstances", book_instance_controller.bookinstance_list);
 
 
 
@@ -146,7 +147,5 @@ router.post(
 // GET request for one BookInstance.
 router.get("/bookinstance/:id", book_instance_controller.bookinstance_detail);
 
-// GET request for list of all BookInstance.
-router.get("/bookinstances", book_instance_controller.bookinstance_list);
 
 module.exports = router;
