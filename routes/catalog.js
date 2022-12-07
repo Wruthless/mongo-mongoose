@@ -26,8 +26,9 @@ router.get("/books", book_controller.book_list);
 // GET request for list of all BookInstance.
 router.get("/bookinstances", book_instance_controller.bookinstance_list);
 
-
-
+/* genres... */
+// GET request for list of all Genre.
+router.get("/genres", genre_controller.genre_list);
 
 
 
