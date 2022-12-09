@@ -22,9 +22,18 @@ router.get("/", book_controller.index);
 // GET request for list of all Book items.
 router.get("/books", book_controller.book_list);
 
+// GET request for one Book.
+router.get("/books/:id", book_controller.book_detail);
+
+
+
+
 /* bookInstances... */
 // GET request for list of all BookInstance.
 router.get("/bookinstances", book_instance_controller.bookinstance_list);
+
+
+
 
 /* genres... */
 // GET request for list of all Genre.
@@ -49,9 +58,6 @@ router.get("/book/:id/update", book_controller.book_update_get);
 
 // POST request to update Book.
 router.post("/book/:id/update", book_controller.book_update_post);
-
-// GET request for one Book.
-router.get("/book/:id", book_controller.book_detail);
 
 
 
