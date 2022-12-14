@@ -1,6 +1,7 @@
 const Genre = require("../models/genre");
 const Book = require("../models/book");
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 // Display list of all Genre.
 exports.genre_list = (req, res, next) => {
@@ -47,9 +48,9 @@ exports.genre_detail = (req, res, next) => {
     )
 };
 
-// Display Genre create form on GET.
-exports.genre_create_get = (req, res) => {
-    res.send("NOT IMPLEMENTED: Genre create GET");
+// Display Genre create form on GET
+exports.genre_create_get = (req, res, next) => {
+    res.render("genre_form", {title: "Create Genre"});
 };
 
 // Handle Genre create on POST.
