@@ -186,47 +186,57 @@ exports.book_create_post = [
 			genre: req.body.genre,
 		});
 
-		if (!errors.isEmpty()) {
-			// Get all authors and genres for form.
-			async.parallel({
-					authors(callback) {
-						Author.find(callback);
-					},
-					genres(callback) {
-						Genre.find(callback)
-					},
-				},
-				(err, results) => {
-					if(err) {
-						return next(err);
-					}
-
-					// Mark selected genre as checked.
-					for(const genre of results.genre) {
-						if (book.genre.includes(genre.id)) {
-							// Current genre is selected. Set "checked" flag.
-							genre.checked = "true";
-						}
-					}
-					res.render("book_form", {
-						title: "Create Book",
-						authors: results.authors,
-						genres: results.genres,
-						book,
-						errors: errors.array(),
-					});
-				}
-			);
-			return;
-		}
-		// Date is valid, save the new book.
-		book.save((err) => {
+		Book.findOne({
+			isbn: req.body.isbn
+		}).exec((err, found_book) => {
 			if(err) {
 				return next(err);
 			}
-			// Redirect to new book record.
-			res.redirect(book.url);
-		});
+			if (found_book) {
+				res.redirect(found_book.url);
+			} else {
+				if (!errors.isEmpty()) {
+					// Get all authors and genres for form.
+					async.parallel({
+							authors(callback) {
+								Author.find(callback);
+							},
+							genres(callback) {
+								Genre.find(callback)
+							},
+						},
+						(err, results) => {
+							if (err) {
+								return next(err);
+							}
+
+							// Mark selected genre as checked.
+							for (const genre of results.genre) {
+								if (book.genre.includes(genre.id)) {
+									// Current genre is selected. Set "checked" flag.
+									genre.checked = "true";
+								}
+							}
+							res.render("book_form", {
+								title: "Create Book",
+								authors: results.authors,
+								genres: results.genres,
+								book,
+								errors: errors.array(),
+							});
+						}
+					);
+				}
+				// Date is valid, save the new book.
+				book.save((err) => {
+					if (err) {
+						return next(err);
+					}
+					// Redirect to new book record.
+					res.redirect(book.url);
+				});
+			}
+		})
 	},
 ];
 
