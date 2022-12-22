@@ -1,5 +1,7 @@
 const BookInstance = require("../models/bookinstance");
 const Book = require("../models/book");
+const {body, validationResult} = require("express-validator");
+
 
 // Display list of all BookInstances.
 exports.bookinstance_list = (req, res, next) => {
@@ -22,26 +24,34 @@ exports.bookinstance_detail = (req, res, next) => {
 	BookInstance.findById(req.params.id)
 		.populate("book")
 		.exec((err, bookinstance) => {
-			if (err) {
-				return next(err);
+				if (err) {
+					return next(err);
+				}
+				if (bookinstance == null) {
+					const err = new Error("Book copy not found");
+					err.status = 404;
+					return next(err);
+				}
+				console.log(bookinstance)
+				res.render("bookinstance_detail", {
+					title: `Copy: ${bookinstance.book.title}`,
+					bookinstance,
+				});
 			}
-			if (bookinstance == null) {
-				const err = new Error("Book copy not found");
-				err.status = 404;
-				return next(err);
-			}
-			console.log(bookinstance)
-			res.render("bookinstance_detail", {
-				title: `Copy: ${bookinstance.book.title}`,
-				bookinstance,
-			});
-		}
-   );
+		);
 };
 
 // Display BookInstance create form on GET.
-exports.bookinstance_create_get = (req, res) => {
-	res.send("NOT IMPLEMENTED: BookInstance create GET");
+exports.bookinstance_create_get = (req, res, next) => {
+	Book.find({}, "title").exec((err, books) => {
+		if (err) {
+			return next(err);
+		}
+		res.render("bookinstance_form", {
+			title: "Create BookInstance",
+			book_list: books,
+		})
+	})
 };
 
 // Handle BookInstance create on POST.
