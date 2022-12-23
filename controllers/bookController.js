@@ -139,6 +139,7 @@ exports.book_create_get = (req, res, next) => {
 			if (err) {
 				return next(err);
 			}
+			console.log(results)
 			res.render("book_form", {
 				title: "Create Book",
 				authors: results.authors,

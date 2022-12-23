@@ -22,7 +22,10 @@ block content
         .form-group
             label(for="status") Status
             select#status.form-control(name="status", required="true")
+                for book_instance in book_instances
+                    option(value="book_instance._id", selected=(selected_bi === book_instance._id.toString() ? 'selected' : false)) #{book_instance.status}
                 button.btn.btn-primary(type="submit") Submit
+
 
     if errors
         ul
