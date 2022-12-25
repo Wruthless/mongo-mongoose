@@ -42,42 +42,28 @@ exports.bookinstance_detail = (req, res, next) => {
 		);
 };
 
-//Display BookInstance create form on GET.
 exports.bookinstance_create_get = (req, res, next) => {
-	Book.find({}, "title").exec((err, books) => {
-		if (err) {
-			return next(err);
+	async.parallel({
+			book_instances(callback) {
+				BookInstance.find(callback);
+			},
+			books(callback) {
+				Book.find(callback);
+			},
+		},
+		(err, results) => {
+			if (err) {
+				return next(err);
+			}
+			res.render("bookinstance_form", {
+				title: "Create Book Instance",
+				book_list: results.books,
+				book_instances: results.book_instances
+			})
 		}
-		res.render("bookinstance_form", {
-			title: "Create BookInstance",
-			book_list: books,
-		})
-	})
+	)
 };
 
-// exports.bookinstance_create_get = (req, res, next) => {
-// 	async.parallel({
-// 			book_instances(callback) {
-// 				BookInstance.find(callback);
-// 			},
-// 			books(callback) {
-// 				Book.find(callback);
-// 			},
-// 		},
-// 		(err, results) => {
-// 			if (err) {
-// 				return next(err);
-// 			}
-// 			res.render("bookinstance_form", {
-// 				title: "Create Book Instance",
-// 				book_list: results.books,
-// 				book_instances: results.book_instances
-// 			})
-// 		}
-// 	)
-// };
-
-// Handle BookInstance create on POST.
 // Handle BookInstance create on POST.
 exports.bookinstance_create_post = [
 	// Validate and sanitize fields.
