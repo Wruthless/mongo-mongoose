@@ -248,6 +248,9 @@ exports.book_delete_get = function (req, res, next) {
 			book: function (callback) {
 				Book.findById(req.params.id).exec(callback);
 			},
+			book_instance: function(callback) {
+				BookInstance.find({book: req.params.id}).exec(callback);
+			}
 		},
 		function (err, results) {
 			if (err) {
@@ -262,6 +265,7 @@ exports.book_delete_get = function (req, res, next) {
 			res.render("book_delete", {
 				title: "Delete Book",
 				book: results.book,
+				book_instance: results.book_instance
 			});
 		}
 	);

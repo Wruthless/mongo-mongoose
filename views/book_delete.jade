@@ -2,3 +2,17 @@ extends layout
 
 block content
     h1 #{title}: #{book.title}
+
+    if book_instance.length
+        p #[strong Delete the following book instances before attempting to delete this book.]
+
+        h4 Book Instances
+
+        dl
+            each instance in book_instance
+                dt
+                    p #{book_instance[0]._id}
+                dd #{book_instance.status}
+
+    else
+        p #[Do you really wish to delete this book?]
